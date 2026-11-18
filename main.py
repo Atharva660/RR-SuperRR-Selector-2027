@@ -28,7 +28,6 @@ BASE = next(
     Path(__file__).resolve().parent
 )
 sys.path.insert(0, os.path.join(BASE, "src"))
-from src.data_loader import load_all_datasets, build_master_dataset, load_player_names
 import pandas as pd
 import numpy as np
 
@@ -56,7 +55,7 @@ os.makedirs(RANKINGS_DIR, exist_ok=True)
 os.makedirs(REPORTS_DIR, exist_ok=True)
 os.makedirs(CHARTS_DIR, exist_ok=True)
 
-from data_loader import load_all_datasets, build_master_dataset, load_player_names
+from src.data_loader import load_all_datasets, build_master_dataset, load_player_names
 from data_cleaning import clean_ball_by_ball_audited, generate_reconciliation_report
 from pressure_engine import compute_pressure_scores_audited
 from feature_engineering import build_audited_batting_features, build_audited_bowling_features
