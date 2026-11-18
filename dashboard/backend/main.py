@@ -6,16 +6,21 @@ import pandas as pd
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
+from src.data_loader import load_all_datasets, build_master_dataset, load_player_names
 
 app = FastAPI(
     title="SupeRR Selector - Pressure Intelligence Engine API"
 )
 
 # Works on Windows, Linux, Render, and local development.
-BASE = Path(__file__).resolve().parents[2]
-RANKINGS_DIR = BASE / "outputs" / "rankings"
-REPORTS_DIR = BASE / "outputs" / "reports"
-FRONTEND_DIR = BASE / "dashboard" / "frontend"
+BASE = next(
+    (
+        p for p in Path(__file__).resolve().parents
+        if (p / "outputs" / "rankings").exists()
+        and (p / "dashboard" / "frontend").exists()
+    ),
+    Path(__file__).resolve().parent
+)
 
 app.add_middleware(
     CORSMiddleware,
