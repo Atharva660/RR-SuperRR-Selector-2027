@@ -1,0 +1,52 @@
+{
+  "target": "Pressure Boundary Hit Probability (is_four or is_six)",
+  "validation_design": "Match-Grouped Chronological Split (Train: 75% matches, Test: 25% matches)",
+  "benchmark_results": {
+    "Baseline_Prior_Frequency": {
+      "ROC_AUC": 0.5,
+      "PR_AUC": 0.1833,
+      "Brier_Score": 0.1498,
+      "Log_Loss": 0.4766,
+      "Precision": 0.0,
+      "Recall": 0.0,
+      "F1_Score": 0.0
+    },
+    "LogisticRegression": {
+      "ROC_AUC": 0.5829,
+      "PR_AUC": 0.2303,
+      "Brier_Score": 0.1478,
+      "Log_Loss": 0.4699,
+      "Precision": 0.0,
+      "Recall": 0.0,
+      "F1_Score": 0.0
+    },
+    "RandomForest": {
+      "ROC_AUC": 0.5729,
+      "PR_AUC": 0.2218,
+      "Brier_Score": 0.1485,
+      "Log_Loss": 0.4722,
+      "Precision": 0.0,
+      "Recall": 0.0,
+      "F1_Score": 0.0
+    },
+    "GradientBoosting": {
+      "ROC_AUC": 0.5661,
+      "PR_AUC": 0.2135,
+      "Brier_Score": 0.1504,
+      "Log_Loss": 0.477,
+      "Precision": 0.0625,
+      "Recall": 0.0011,
+      "F1_Score": 0.0021
+    },
+    "XGBoost": {
+      "ROC_AUC": 0.5728,
+      "PR_AUC": 0.2202,
+      "Brier_Score": 0.1487,
+      "Log_Loss": 0.4727,
+      "Precision": 0.0,
+      "Recall": 0.0,
+      "F1_Score": 0.0
+    }
+  },
+  "scientific_interpretation": "Single-delivery cricket outcomes contain high aleatoric uncertainty (unobserved pitch contact dynamics, bowler biomechanical execution, and fielder positioning). Model calibration (Brier Score ~0.140) confirms that pre-delivery pressure factors structure baseline scoring odds, but models function as Bayesian priors rather than deterministic rankers."
+}

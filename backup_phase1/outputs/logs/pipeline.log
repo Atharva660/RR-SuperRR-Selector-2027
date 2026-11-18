@@ -1,0 +1,69 @@
+2026-11-18 20:41:24,345 | main_pipeline | INFO | ============================================================
+2026-11-18 20:41:24,345 | main_pipeline | INFO | PHASE A: Data Loading & Schema Inspection
+2026-11-18 20:41:24,345 | main_pipeline | INFO | ============================================================
+2026-11-18 20:41:25,510 | data_loader | INFO | Loaded ball_by_ball.csv: (200999, 33)
+2026-11-18 20:41:25,519 | data_loader | INFO | Loaded matches.csv: (883, 22)
+2026-11-18 20:41:25,522 | data_loader | INFO | Loaded competitions.csv: (141, 4)
+2026-11-18 20:41:25,527 | data_loader | INFO | Loaded teams.csv: (353, 3)
+2026-11-18 20:41:25,561 | data_loader | INFO | Loaded playing_eleven.csv: (28381, 9)
+2026-11-18 20:41:25,578 | data_loader | INFO | Loaded competition_team_player_mapping.csv: (6413, 6)
+2026-11-18 20:41:25,785 | main_pipeline | INFO | ball_by_ball: (200999, 33)
+2026-11-18 20:41:25,785 | main_pipeline | INFO | matches: (883, 22)
+2026-11-18 20:41:25,786 | main_pipeline | INFO | competitions: (141, 4)
+2026-11-18 20:41:25,786 | main_pipeline | INFO | teams: (353, 3)
+2026-11-18 20:41:25,786 | main_pipeline | INFO | playing_eleven: (28381, 9)
+2026-11-18 20:41:25,786 | main_pipeline | INFO | player_mapping: (6413, 6)
+2026-11-18 20:41:25,787 | main_pipeline | INFO | Unique players in mapping: 1217
+2026-11-18 20:41:25,787 | main_pipeline | INFO | ============================================================
+2026-11-18 20:41:25,787 | main_pipeline | INFO | PHASE B: Data Cleaning & Validation
+2026-11-18 20:41:25,787 | main_pipeline | INFO | ============================================================
+2026-11-18 20:41:26,400 | main_pipeline | INFO | BBB missing values: 7 columns with nulls
+2026-11-18 20:41:26,400 | main_pipeline | INFO | Matches missing values: 8 columns with nulls
+2026-11-18 20:41:27,992 | main_pipeline | INFO | Cleaned BBB rows: 200,999
+2026-11-18 20:41:27,996 | main_pipeline | INFO | Building master dataset...
+2026-11-18 20:41:28,467 | main_pipeline | INFO | Master dataset: (200999, 55)
+2026-11-18 20:41:28,467 | main_pipeline | INFO | ============================================================
+2026-11-18 20:41:28,467 | main_pipeline | INFO | PHASE C: Exploratory Data Analysis
+2026-11-18 20:41:28,467 | main_pipeline | INFO | ============================================================
+2026-11-18 20:41:28,470 | main_pipeline | INFO | Total matches: 883
+2026-11-18 20:41:28,471 | main_pipeline | INFO | IPL matches: 371
+2026-11-18 20:41:28,512 | main_pipeline | INFO | IPL deliveries: 87,687
+2026-11-18 20:41:28,565 | main_pipeline | INFO | T20I deliveries: 106,327
+2026-11-18 20:41:28,604 | main_pipeline | INFO | Unique batters (IPL): 341
+2026-11-18 20:41:28,609 | main_pipeline | INFO | Unique bowlers (IPL): 260
+2026-11-18 20:41:28,655 | main_pipeline | INFO | IPL average strike rate (all): 147.5
+2026-11-18 20:41:28,666 | main_pipeline | INFO | ============================================================
+2026-11-18 20:41:28,666 | main_pipeline | INFO | PHASE D: Pressure Situation Engine
+2026-11-18 20:41:28,667 | main_pipeline | INFO | ============================================================
+2026-11-18 20:41:28,667 | pressure_engine | INFO | Computing innings cumulative totals...
+2026-11-18 20:41:29,027 | pressure_engine | INFO | Computing first-innings final totals...
+2026-11-18 20:41:29,465 | pressure_engine | INFO | Pressure scores computed. High/Extreme batting: 24,503 deliveries
+2026-11-18 20:41:29,471 | main_pipeline | INFO | High/Extreme batting pressure deliveries: 24,503
+2026-11-18 20:41:29,472 | main_pipeline | INFO | Extreme batting pressure deliveries: 2,109
+2026-11-18 20:41:30,545 | main_pipeline | INFO | ============================================================
+2026-11-18 20:41:30,545 | main_pipeline | INFO | PHASE E: Feature Engineering
+2026-11-18 20:41:30,545 | main_pipeline | INFO | ============================================================
+2026-11-18 20:41:33,905 | feature_engineering | INFO | Eligible batters: 129
+2026-11-18 20:41:34,565 | feature_engineering | INFO | Eligible bowlers: 94
+2026-11-18 20:41:34,617 | main_pipeline | INFO | Batting features built: 129 eligible batters
+2026-11-18 20:41:34,617 | main_pipeline | INFO | Bowling features built: 94 eligible bowlers
+2026-11-18 20:41:34,617 | main_pipeline | INFO | ============================================================
+2026-11-18 20:41:34,617 | main_pipeline | INFO | PHASE F: Bayesian Reliability Framework
+2026-11-18 20:41:34,617 | main_pipeline | INFO | ============================================================
+2026-11-18 20:41:34,627 | main_pipeline | INFO | Bayesian shrinkage applied to batting SR, AVG and bowling economy
+2026-11-18 20:41:34,627 | main_pipeline | INFO | ============================================================
+2026-11-18 20:41:34,627 | main_pipeline | INFO | PHASE H: RR Pressure Reliability Index
+2026-11-18 20:41:34,627 | main_pipeline | INFO | ============================================================
+2026-11-18 20:41:34,672 | main_pipeline | INFO | ============================================================
+2026-11-18 20:41:34,672 | main_pipeline | INFO | PHASE I: Final Player Rankings
+2026-11-18 20:41:34,674 | main_pipeline | INFO | ============================================================
+2026-11-18 20:41:34,680 | main_pipeline | INFO | Computing bootstrap top-10 probabilities (match-level, 100 iterations)...
+2026-11-18 20:41:57,405 | main_pipeline | INFO | Rankings saved to outputs/rankings/
+2026-11-18 20:41:57,505 | main_pipeline | INFO | ============================================================
+2026-11-18 20:41:57,515 | main_pipeline | INFO | PIPELINE COMPLETE
+2026-11-18 20:41:57,515 | main_pipeline | INFO | Total deliveries analysed: 200,999
+2026-11-18 20:41:57,515 | main_pipeline | INFO | IPL deliveries: 87,687
+2026-11-18 20:41:57,515 | main_pipeline | INFO | High/Extreme pressure deliveries: 24,503
+2026-11-18 20:41:57,515 | main_pipeline | INFO | Eligible batters: 129
+2026-11-18 20:41:57,515 | main_pipeline | INFO | Eligible bowlers: 94
+2026-11-18 20:41:57,515 | main_pipeline | INFO | ============================================================

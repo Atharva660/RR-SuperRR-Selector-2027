@@ -1,0 +1,22 @@
+{
+  "permutation_importance": {
+    "batting_pressure_score": 0.0,
+    "bowling_pressure_score": 0.0,
+    "balls_remaining": 0.0,
+    "wickets_remaining": 0.0,
+    "overid": 0.0,
+    "innings_phase": 0.0,
+    "innings": 0.0,
+    "rrr_filled": 0.0
+  },
+  "xgboost_feature_importance": {
+    "batting_pressure_score": 0.1226,
+    "bowling_pressure_score": 0.2931,
+    "balls_remaining": 0.1537,
+    "wickets_remaining": 0.2435,
+    "overid": 0.0,
+    "innings_phase": 0.0,
+    "innings": 0.0,
+    "rrr_filled": 0.187
+  }
+}

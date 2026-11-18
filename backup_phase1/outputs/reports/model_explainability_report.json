@@ -1,0 +1,29 @@
+{
+  "RandomForest_Feature_Importance": {
+    "batting_pressure_score": 0.1887,
+    "bowling_pressure_score": 0.2227,
+    "balls_remaining": 0.1385,
+    "innings_stage": 0.0189,
+    "overid": 0.1209,
+    "wickets_remaining": 0.1315,
+    "rrr_filled": 0.1789
+  },
+  "XGBoost_Feature_Importance": {
+    "batting_pressure_score": 0.0836,
+    "bowling_pressure_score": 0.0923,
+    "balls_remaining": 0.0799,
+    "innings_stage": 0.0505,
+    "overid": 0.4221,
+    "wickets_remaining": 0.2,
+    "rrr_filled": 0.0715
+  },
+  "Permutation_Importance_RF": {
+    "batting_pressure_score": 0.0,
+    "bowling_pressure_score": 0.0,
+    "balls_remaining": 0.0,
+    "innings_stage": 0.0,
+    "overid": 0.0,
+    "wickets_remaining": 0.0,
+    "rrr_filled": 0.0
+  }
+}

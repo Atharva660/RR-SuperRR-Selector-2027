@@ -1,0 +1,25 @@
+{
+  "baseline_top10": [
+    "Rinku Singh",
+    "Mahendra Singh Dhoni",
+    "David Miller",
+    "Shashank Singh",
+    "Tristan Stubbs",
+    "Tim David",
+    "Ashutosh Sharma",
+    "Dhruv Jurel",
+    "Ravindra Jadeja",
+    "Namboori Tilak Varma"
+  ],
+  "perturbation_overlaps": {
+    "Threshold_45": 0.8,
+    "Threshold_55": 0.9,
+    "Prior_SR_125": 1.0,
+    "Prior_SR_145": 1.0,
+    "Min_IPL_Balls_40": 1.0,
+    "Min_IPL_Balls_60": 1.0
+  },
+  "mean_top10_stability": 0.95,
+  "status": "VALIDATED",
+  "scientific_summary": "The primary Category A batter rankings exhibit a 95.0% mean Top-10 overlap across pressure threshold shifts, prior variations, and sample cutoffs, confirming high parametric robustness."
+}

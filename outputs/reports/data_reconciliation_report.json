@@ -1,0 +1,26 @@
+{
+  "raw_deliveries_total": 200999,
+  "ipl_deliveries": 87687,
+  "other_t20_deliveries": 6985,
+  "t20i_deliveries": 106327,
+  "reconciled_sum": 200999,
+  "discrepancy": 0,
+  "raw_matches_total": 883,
+  "matches_with_bbb": 867,
+  "abandoned_matches_no_bbb": 16,
+  "other_t20_competitions": [
+    {
+      "comp_id": 2670,
+      "comp_name": "Mens T20 Emerging Teams Asia Cup 2024",
+      "deliveries": 3519,
+      "matches": 15
+    },
+    {
+      "comp_id": 3289,
+      "comp_name": "Asia Cup Rising Stars 2025",
+      "deliveries": 3466,
+      "matches": 15
+    }
+  ],
+  "audit_resolution": "The previously unaccounted 6,985 deliveries belong to Mens T20 Emerging Teams Asia Cup 2024 (3,519 balls) and Asia Cup Rising Stars 2025 (3,466 balls). Exactly 16 scheduled matches were abandoned with zero balls bowled."
+}

@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SupeRR Selector — Pressure Performance Intelligence System</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            rrnavy: '#0A0E1A', rrcard: '#0F1629', rrblue: '#002366',
+            rrpink: '#E0115F', rrgold: '#FFD700', rraccent: '#00D4FF'
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body {
+      background: #0A0E1A;
+      color: #E2E8F0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    .card-border {
+      border: 1px solid #1E293B;
+    }
+
+    .card-border:hover {
+      border-color: #E0115F;
+    }
+
+    .active-nav {
+      border-bottom: 2px solid #E0115F;
+      color: #E0115F;
+      font-weight: 700;
+    }
+
+    .page-content {
+      min-width: 0;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    .metric-value {
+      overflow-wrap: anywhere;
+    }
+
+    button:focus-visible,
+    select:focus-visible {
+      outline: 2px solid #00D4FF;
+      outline-offset: 3px;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen flex flex-col">
+  <header class="bg-rrcard border-b border-gray-800 sticky top-0 z-50 px-4 md:px-6 py-4">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center space-x-3">
+        <div
+          class="w-10 h-10 rounded-full bg-rrpink flex items-center justify-center font-black text-white text-xl shadow-lg shadow-pink-500/30">
+          RR</div>
+        <div>
+          <h1 class="text-lg md:text-xl font-black tracking-wider text-white">SUPERR SELECTOR <span
+              class="text-xs px-2 py-0.5 rounded bg-pink-900/60 text-pink-300 ml-1 border border-pink-700">SEASON
+              2</span></h1>
+          <p class="text-xs text-gray-400">Pressure Performance Intelligence & IPL 2027 Auction Engine</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 text-xs font-semibold uppercase" aria-live="polite">
+        <span id="apiStatusDot" class="inline-block w-2.5 h-2.5 rounded-full bg-yellow-400"></span>
+        <span id="apiStatusText" class="text-yellow-300">Connecting to API</span>
+      </div>
+    </div>
+    <nav class="max-w-7xl mx-auto mt-3 flex gap-2 overflow-x-auto text-sm font-medium text-gray-300"
+      aria-label="Dashboard sections">
+      <button onclick="switchTab('overview')" id="tab-overview"
+        class="px-2 py-2 whitespace-nowrap active-nav">Overview</button>
+      <button onclick="switchTab('batters')" id="tab-batters" class="px-2 py-2 whitespace-nowrap">Batter
+        Analytics</button>
+      <button onclick="switchTab('bowlers')" id="tab-bowlers" class="px-2 py-2 whitespace-nowrap">Bowler
+        Analytics</button>
+      <button onclick="switchTab('engine')" id="tab-engine" class="px-2 py-2 whitespace-nowrap">Pressure Engine</button>
+      <button onclick="switchTab('ml')" id="tab-ml" class="px-2 py-2 whitespace-nowrap">Machine Learning</button>
+      <button onclick="switchTab('profile')" id="tab-profile" class="px-2 py-2 whitespace-nowrap">Player
+        Profile</button>
+      <button onclick="switchTab('recommendations')" id="tab-recommendations"
+        class="px-2 py-2 whitespace-nowrap">Recommendations</button>
+    </nav>
+  </header>
+
+  <main class="flex-1 p-4 md:p-6 max-w-7xl mx-auto w-full space-y-6">
+    <div id="globalError" class="hidden rounded-lg border border-red-800 bg-red-950/40 p-4 text-sm text-red-200"
+      role="alert"></div>
+
+    <section id="page-overview" class="page-content space-y-6">
+      <div>
+        <h2 class="text-2xl font-black text-white">Executive Tournament Intelligence Overview</h2>
+        <p class="text-sm text-gray-400 mt-1">Live dashboard metrics retrieved from the SupeRR Selector API.</p>
+      </div>
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4" id="overviewCards">
+        <div class="bg-rrcard p-5 rounded-xl card-border col-span-2 lg:col-span-4 text-gray-400">Loading overview
+          metrics…</div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-rrcard p-5 md:p-6 rounded-xl card-border">
+          <h3 class="font-bold text-white mb-4">Top 10 Batter Pressure Strike Rates</h3>
+          <canvas id="batterChart" height="220"></canvas>
+        </div>
+        <div class="bg-rrcard p-5 md:p-6 rounded-xl card-border">
+          <h3 class="font-bold text-white mb-4">Top 10 Bowler Pressure Economies</h3>
+          <canvas id="bowlerChart" height="220"></canvas>
+        </div>
+      </div>
+      <p class="text-xs text-gray-500">Charts and rankings are populated from the API responses. Missing fields are
+        shown as unavailable rather than estimated.</p>
+    </section>
+
+    <section id="page-batters" class="page-content hidden space-y-5">
+      <div class="flex flex-wrap justify-between items-end gap-3">
+        <div>
+          <h2 class="text-2xl font-black text-white">Batters Under Pressure</h2>
+          <p class="text-sm text-gray-400">Ranked using the RR-PRI values returned by the backend.</p>
+        </div>
+        <button onclick="downloadCSV('batters')"
+          class="px-4 py-2 bg-rrpink hover:bg-pink-600 rounded-lg text-sm font-bold text-white"><i
+            class="fa-solid fa-download mr-2"></i>Download batter CSV</button>
+      </div>
+      <div class="bg-rrcard rounded-xl card-border table-wrap">
+        <table class="w-full text-left text-sm min-w-[850px]">
+          <thead class="bg-gray-900/80 text-xs text-gray-400 uppercase">
+            <tr>
+              <th class="p-4">Rank</th>
+              <th class="p-4">Player</th>
+              <th class="p-4 text-center">Pressure SR</th>
+              <th class="p-4 text-center">Bayesian SR</th>
+              <th class="p-4 text-center">Pressure Avg</th>
+              <th class="p-4 text-center">SR Improvement</th>
+              <th class="p-4 text-center">Consistency</th>
+              <th class="p-4 text-right">RR-PRI</th>
+            </tr>
+          </thead>
+          <tbody id="battersTableBody" class="divide-y divide-gray-800">
+            <tr>
+              <td colspan="8" class="p-5 text-gray-400">Loading batters…</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="page-bowlers" class="page-content hidden space-y-5">
+      <div class="flex flex-wrap justify-between items-end gap-3">
+        <div>
+          <h2 class="text-2xl font-black text-white">Bowlers Under Pressure</h2>
+          <p class="text-sm text-gray-400">Ranked using the RR-PRI values returned by the backend.</p>
+        </div>
+        <button onclick="downloadCSV('bowlers')"
+          class="px-4 py-2 bg-rrpink hover:bg-pink-600 rounded-lg text-sm font-bold text-white"><i
+            class="fa-solid fa-download mr-2"></i>Download bowler CSV</button>
+      </div>
+      <div class="bg-rrcard rounded-xl card-border table-wrap">
+        <table class="w-full text-left text-sm min-w-[850px]">
+          <thead class="bg-gray-900/80 text-xs text-gray-400 uppercase">
+            <tr>
+              <th class="p-4">Rank</th>
+              <th class="p-4">Player</th>
+              <th class="p-4 text-center">Pressure Economy</th>
+              <th class="p-4 text-center">Bayesian Economy</th>
+              <th class="p-4 text-center">Pressure Wickets</th>
+              <th class="p-4 text-center">Dot Ball %</th>
+              <th class="p-4 text-center">Consistency</th>
+              <th class="p-4 text-right">RR-PRI</th>
+            </tr>
+          </thead>
+          <tbody id="bowlersTableBody" class="divide-y divide-gray-800">
+            <tr>
+              <td colspan="8" class="p-5 text-gray-400">Loading bowlers…</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="page-engine" class="page-content hidden space-y-5">
+      <h2 class="text-2xl font-black text-white">Dynamic Pressure Situation Engine</h2>
+      <p class="text-sm text-gray-400">The API currently exposes player rankings and evaluation reports. Detailed
+        pressure-score components, weights and threshold definitions are documented in the methodology report rather
+        than duplicated here as potentially stale dashboard constants.</p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-rrcard p-6 rounded-xl card-border">
+          <h3 class="font-bold text-rrgold mb-3">Match-context inputs</h3>
+          <ul class="space-y-3 text-sm text-gray-300">
+            <li>Required and current run rates during a chase</li>
+            <li>Wickets remaining and collapse risk</li>
+            <li>Deliveries remaining and innings phase</li>
+            <li>Runs remaining to target and first-innings scoring context</li>
+          </ul>
+        </div>
+        <div class="bg-rrcard p-6 rounded-xl card-border">
+          <h3 class="font-bold text-rraccent mb-3">Methodology reference</h3>
+          <p class="text-sm text-gray-300">Use the submitted methodology PDF for the exact pressure formula, feature
+            weights, score bands, and separate batting and bowling treatment. This dashboard does not invent or
+            recalculate those values.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="page-ml" class="page-content hidden space-y-5">
+      <h2 class="text-2xl font-black text-white">Machine Learning & Explainability</h2>
+      <p class="text-sm text-gray-400">Report payloads are retrieved from <code>/api/reports/ml</code>.</p>
+      <div id="mlReport" class="bg-rrcard p-5 md:p-6 rounded-xl card-border text-sm text-gray-300">Loading model
+        evaluation and explainability reports…</div>
+      <div class="bg-rrcard p-5 md:p-6 rounded-xl card-border">
+        <h3 class="font-bold text-rrgold mb-3">Ranking stability report</h3>
+        <div id="stabilityReport" class="text-sm text-gray-300">Loading stability report…</div>
+      </div>
+    </section>
+
+    <section id="page-profile" class="page-content hidden space-y-5">
+      <div>
+        <h2 class="text-2xl font-black text-white">Player Profile</h2>
+        <p class="text-sm text-gray-400">Choose a player from the API-backed ranking lists.</p>
+      </div>
+      <div class="bg-rrcard p-5 md:p-6 rounded-xl card-border">
+        <label for="playerSelect" class="block text-xs uppercase text-gray-400 font-bold mb-2">Select Player</label>
+        <select id="playerSelect" onchange="renderPlayerProfile()"
+          class="w-full md:w-1/2 bg-gray-900 border border-gray-700 rounded-lg p-3 text-white">
+          <option>Loading players…</option>
+        </select>
+        <div id="profileDetails" class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+      </div>
+    </section>
+
+    <section id="page-recommendations" class="page-content hidden space-y-5">
+      <div class="flex flex-wrap justify-between items-end gap-3">
+        <div>
+          <h2 class="text-2xl font-black text-white">Role-adjusted Auction Shortlist</h2>
+          <p class="text-sm text-gray-400">Batters follow the statistical shortlist. The bowling shortlist applies a
+            specialist-role adjustment; it does not alter the RR-PRI leaderboard.</p>
+        </div><button onclick="downloadCSV('both')"
+          class="px-4 py-2 bg-rrpink hover:bg-pink-600 rounded-lg text-sm font-bold text-white"><i
+            class="fa-solid fa-download mr-2"></i>Export statistical CSVs</button>
+      </div>
+      <div class="rounded-lg border border-cyan-900/70 bg-cyan-950/20 p-4 text-sm text-cyan-100">Bowler selection note:
+        Jasprit Bumrah is included as a role-adjusted specialist-bowler replacement for Riyan Parag. The Bowler
+        Analytics tab retains the original RR-PRI order, so the statistical results remain transparent. Auction
+        availability is not verified by historical performance data.</div>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-rrcard p-5 rounded-xl card-border">
+          <h3 class="text-lg font-black text-rrgold mb-4">Batter shortlist</h3>
+          <div id="recomBattersList" class="space-y-2"></div>
+        </div>
+        <div class="bg-rrcard p-5 rounded-xl card-border">
+          <h3 class="text-lg font-black text-rraccent mb-4">Specialist bowler shortlist</h3>
+          <div id="recomBowlersList" class="space-y-2"></div>
+          <p id="bowlerShortlistStatus" class="text-xs text-gray-500 mt-3"></p>
+        </div>
+      </div>
+    </section>
+
+    <footer class="border-t border-gray-800 pt-4 text-xs text-gray-500 flex flex-wrap justify-between gap-2">
+      <span>SupeRR Selector · Pressure Performance Intelligence</span><span id="lastUpdated">Waiting for API data</span>
+    </footer>
+  </main>
+
+  <script>
+    const API_BASE = ''; // Same-origin deployment: FastAPI serves this page and its /api routes.
+    let battersData = [], bowlersData = [], overviewData = {}, mlData = null, stabilityData = null;
+    let batterChart = null, bowlerChart = null;
+
+    const first = (obj, keys, fallback = null) => {
+      for (const key of keys) if (obj && obj[key] !== undefined && obj[key] !== null && obj[key] !== '') return obj[key];
+      return fallback;
+    };
+    const num = (obj, keys, fallback = null) => {
+      const value = first(obj, keys, fallback);
+      if (value === null || value === undefined || value === '') return null;
+      const parsed = Number(value);
+      return Number.isFinite(parsed) ? parsed : null;
+    };
+    const fmt = (value, digits = 2) => value === null || value === undefined || !Number.isFinite(Number(value)) ? '—' : Number(value).toFixed(digits);
+    const esc = value => String(value ?? '—').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+    const batterName = p => first(p, ['player_name', 'name', 'batter_name'], 'Unknown player');
+    const bowlerName = p => first(p, ['player_name', 'name', 'bowler_name'], 'Unknown player');
+    const batterRank = p => num(p, ['rank'], 0);
+    const bowlerRank = p => num(p, ['rank'], 0);
+    const batterPRI = p => num(p, ['rr_pri', 'pri', 'RR_PRI']);
+    const bowlerPRI = p => num(p, ['rr_pri', 'pri', 'RR_PRI']);
+    const batterSR = p => num(p, ['comb_press_sr', 'press_sr', 'ipl_press_sr', 'pressure_sr']);
+    const batterBayes = p => num(p, ['bayes_sr', 'bayes_press_sr', 'bayesian_sr']);
+    const batterAvg = p => num(p, ['comb_press_avg', 'press_avg', 'ipl_press_avg', 'pressure_avg']);
+    const batterDiff = p => num(p, ['sr_improvement', 'sr_diff', 'srdiff']);
+    const batterCons = p => num(p, ['cons', 'consistency_score', 'consistency']);
+    const bowlerEco = p => num(p, ['comb_press_economy', 'press_economy', 'ipl_press_economy', 'pressure_economy']);
+    const bowlerBayes = p => num(p, ['bayes_eco', 'bayes_press_eco', 'bayesian_economy']);
+    const bowlerWickets = p => num(p, ['comb_press_wickets', 'press_wickets', 'ipl_press_wickets', 'pressure_wickets']);
+    const bowlerDots = p => num(p, ['comb_press_dot_pct', 'press_dot_pct', 'ipl_press_dot_pct', 'dot_pct']);
+    const bowlerCons = p => num(p, ['bowl_cons', 'bowl_consistency', 'consistency']);
+
+    async function apiGet(path) {
+      const response = await fetch(`${API_BASE}${path}`, { headers: { 'Accept': 'application/json' } });
+      if (!response.ok) throw new Error(`${path} returned HTTP ${response.status}`);
+      return response.json();
+    }
+    function setApiStatus(ok, message) {
+      document.getElementById('apiStatusDot').className = `inline-block w-2.5 h-2.5 rounded-full ${ok ? 'bg-emerald-500' : 'bg-red-500'}`;
+      document.getElementById('apiStatusText').className = `text-xs font-semibold uppercase ${ok ? 'text-emerald-400' : 'text-red-300'}`;
+      document.getElementById('apiStatusText').textContent = message;
+    }
+    function showError(message) {
+      const box = document.getElementById('globalError');
+      box.textContent = message;
+      box.classList.remove('hidden');
+    }
+    function switchTab(tabId) {
+      document.querySelectorAll('.page-content').forEach(el => el.classList.add('hidden'));
+      document.getElementById('page-' + tabId).classList.remove('hidden');
+      document.querySelectorAll('nav button').forEach(el => el.classList.remove('active-nav'));
+      document.getElementById('tab-' + tabId).classList.add('active-nav');
+    }
+
+    function renderOverview() {
+      const cards = [
+        ['Total Deliveries', first(overviewData, ['total_deliveries'])],
+        ['IPL Deliveries', first(overviewData, ['ipl_deliveries'])],
+        ['High Pressure Deliveries', first(overviewData, ['high_pressure_deliveries'])],
+        ['Ranking Stability', (() => { const v = first(overviewData, ['ranking_stability']); return v === null ? null : `${(Number(v) <= 1 ? Number(v) * 100 : Number(v)).toFixed(1)}%`; })()],
+        ['Matches', first(overviewData, ['total_matches'])],
+        ['Eligible Batters', first(overviewData, ['eligible_batters'])],
+        ['Eligible Bowlers', first(overviewData, ['eligible_bowlers'])],
+        ['Model ROC-AUC', first(overviewData, ['model_validation_auc'])]
+      ];
+      document.getElementById('overviewCards').innerHTML = cards.map(([label, value], i) => `<div class="bg-rrcard p-5 rounded-xl card-border"><p class="text-xs text-gray-400 font-semibold uppercase">${esc(label)}</p><p class="metric-value text-2xl md:text-3xl font-extrabold mt-2 ${i === 3 ? 'text-rraccent' : 'text-white'}">${esc(value === null || value === undefined ? '—' : typeof value === 'number' && label !== 'Model ROC-AUC' ? value.toLocaleString('en-IN') : value)}</p></div>`).join('');
+    }
+    function renderBatters() {
+      const tbody = document.getElementById('battersTableBody');
+      if (!battersData.length) { tbody.innerHTML = '<tr><td colspan="8" class="p-5 text-gray-400">No batter records returned by the API.</td></tr>'; return; }
+      tbody.innerHTML = battersData.slice(0, 10).map(p => `<tr class="hover:bg-gray-800/50"><td class="p-4 font-black text-rrgold">#${esc(batterRank(p))}</td><td class="p-4 font-bold text-white">${esc(batterName(p))}</td><td class="p-4 text-center text-rrpink font-bold">${fmt(batterSR(p), 1)}</td><td class="p-4 text-center">${fmt(batterBayes(p), 1)}</td><td class="p-4 text-center">${fmt(batterAvg(p), 1)}</td><td class="p-4 text-center">${fmt(batterDiff(p), 1)}</td><td class="p-4 text-center">${fmt(batterCons(p), 3)}</td><td class="p-4 text-right text-rraccent font-black">${fmt(batterPRI(p))}</td></tr>`).join('');
+    }
+    function renderBowlers() {
+      const tbody = document.getElementById('bowlersTableBody');
+      if (!bowlersData.length) { tbody.innerHTML = '<tr><td colspan="8" class="p-5 text-gray-400">No bowler records returned by the API.</td></tr>'; return; }
+      tbody.innerHTML = bowlersData.slice(0, 10).map(p => `<tr class="hover:bg-gray-800/50"><td class="p-4 font-black text-rrgold">#${esc(bowlerRank(p))}</td><td class="p-4 font-bold text-white">${esc(bowlerName(p))}</td><td class="p-4 text-center text-rrpink font-bold">${fmt(bowlerEco(p))}</td><td class="p-4 text-center">${fmt(bowlerBayes(p))}</td><td class="p-4 text-center text-emerald-400 font-bold">${fmt(bowlerWickets(p), 0)}</td><td class="p-4 text-center">${fmt(bowlerDots(p), 1)}${bowlerDots(p) === null ? '' : '%'}</td><td class="p-4 text-center">${fmt(bowlerCons(p), 3)}</td><td class="p-4 text-right text-rraccent font-black">${fmt(bowlerPRI(p))}</td></tr>`).join('');
+    }
+    function renderCharts() {
+      if (typeof Chart === 'undefined') return;
+      const labelsB = battersData.slice(0, 10).map(batterName);
+      const valsB = battersData.slice(0, 10).map(p => batterSR(p));
+      const labelsW = bowlersData.slice(0, 10).map(bowlerName);
+      const valsW = bowlersData.slice(0, 10).map(p => bowlerEco(p));
+      const common = { responsive: true, plugins: { legend: { labels: { color: '#E2E8F0' } } }, scales: { x: { ticks: { color: '#94A3B8' }, grid: { color: '#1E293B' } }, y: { ticks: { color: '#94A3B8' }, grid: { color: '#1E293B' } } } };
+      if (batterChart) batterChart.destroy();
+      if (bowlerChart) bowlerChart.destroy();
+      batterChart = new Chart(document.getElementById('batterChart'), { type: 'bar', data: { labels: labelsB, datasets: [{ label: 'Pressure Strike Rate', data: valsB, backgroundColor: '#E0115F' }] }, options: common });
+      bowlerChart = new Chart(document.getElementById('bowlerChart'), { type: 'bar', data: { labels: labelsW, datasets: [{ label: 'Pressure Economy (lower is better)', data: valsW, backgroundColor: '#00D4FF' }] }, options: common });
+    }
+    function renderProfiles() {
+      const select = document.getElementById('playerSelect');
+      const items = [
+        ...battersData.map(p => ({ kind: 'Batter', id: first(p, ['player_id', 'striker_id']), name: batterName(p), rank: batterRank(p) })),
+        ...bowlersData.map(p => ({ kind: 'Bowler', id: first(p, ['player_id', 'bowler_id']), name: bowlerName(p), rank: bowlerRank(p) }))
+      ].filter(p => p.id !== null && p.id !== undefined);
+      select.innerHTML = items.length ? items.map(p => `<option value="${esc(p.kind)}:${esc(p.id)}">${esc(p.name)} (${p.kind} · #${esc(p.rank)})</option>`).join('') : '<option value="">No player IDs available</option>';
+      renderPlayerProfile();
+    }
+    async function renderPlayerProfile() {
+      const value = document.getElementById('playerSelect').value;
+      const target = document.getElementById('profileDetails');
+      if (!value) { target.innerHTML = '<p class="text-gray-400">No player profile is available.</p>'; return; }
+      const [kind, id] = value.split(':');
+      target.innerHTML = '<p class="text-gray-400">Loading player profile…</p>';
+      try {
+        const profile = await apiGet(`/api/player/${encodeURIComponent(id)}`);
+        const p = kind === 'Batter' ? profile.batting : profile.bowling;
+        if (!p) throw new Error('The selected profile was not returned by the backend.');
+        const isBatter = kind === 'Batter';
+        const metrics = isBatter ? [
+          ['RR-PRI', first(p, ['rr_pri'])], ['Pressure Strike Rate', first(p, ['comb_press_sr', 'ipl_press_sr'])], ['Bayesian Strike Rate', first(p, ['bayes_sr'])], ['Pressure Average', first(p, ['comb_press_avg', 'ipl_press_avg'])], ['Pressure Balls', first(p, ['comb_press_balls', 'ipl_press_balls'])], ['Matches Under Pressure', first(p, ['comb_press_matches', 'ipl_press_matches'])]
+        ] : [
+          ['RR-PRI', first(p, ['rr_pri'])], ['Pressure Economy', first(p, ['comb_press_economy', 'ipl_press_economy'])], ['Bayesian Economy', first(p, ['bayes_eco'])], ['Pressure Wickets', first(p, ['comb_press_wickets', 'ipl_press_wickets'])], ['Dot Ball %', first(p, ['comb_press_dot_pct', 'ipl_press_dot_pct'])], ['Pressure Overs', first(p, ['comb_press_overs', 'ipl_press_overs'])]
+        ];
+        target.innerHTML = metrics.map(([label, val]) => `<div class="bg-gray-900/70 p-5 rounded-xl border border-gray-800"><span class="text-xs uppercase text-gray-400 font-bold">${esc(label)}</span><p class="text-2xl font-black text-white mt-2">${esc(typeof val === 'number' ? fmt(val, label.includes('PRI') ? 2 : 2) : val ?? '—')}</p></div>`).join('');
+      } catch (err) { target.innerHTML = `<p class="text-red-300">${esc(err.message)}</p>`; }
+    }
+    function recommendationBowlers() {
+      // Keep the statistical RR-PRI leaderboard untouched. The recommendation
+      // shortlist replaces Riyan Parag with Bumrah. If the API only returns its
+      // top 10 and therefore omits Bumrah, use the verified report values below
+      // for this explicitly role-adjusted recommendation only.
+      const original = bowlersData.slice(0, 10);
+      const riyanIndex = original.findIndex(p => /riyan\s+parag/i.test(bowlerName(p)));
+      const shortlist = original.filter(p => !/riyan\s+parag/i.test(bowlerName(p)));
+      let bumrah = bowlersData.find(p => /jasprit\s+bumrah/i.test(bowlerName(p)));
+      let source = 'API';
+      if (!bumrah) {
+        bumrah = {
+          player_name: 'Jasprit Bumrah', bowler_id: 2933,
+          comb_press_economy: 7.74, bayes_eco: 7.95,
+          comb_press_wickets: 20, comb_press_balls: 434,
+          bowl_cons: 0.633, rr_pri: 52.19,
+          recommendation_source: 'Final methodology report'
+        };
+        source = 'final report';
+      }
+      const insertAt = riyanIndex >= 0 ? Math.min(riyanIndex, shortlist.length) : Math.min(5, shortlist.length);
+      shortlist.splice(insertAt, 0, bumrah);
+      return { players: shortlist.slice(0, 10), replaced: true, source };
+    }
+    function renderRecommendations() {
+      document.getElementById('recomBattersList').innerHTML = battersData.slice(0, 10).map((p, i) => `<div class="p-3 bg-gray-900/70 rounded-lg flex items-center justify-between gap-3"><div><span class="text-xs font-black text-rrgold mr-2">#${i + 1}</span><span class="font-bold text-white">${esc(batterName(p))}</span><span class="text-xs text-gray-400 block mt-1">Pressure SR ${fmt(batterSR(p), 1)} · RR-PRI ${fmt(batterPRI(p))}</span></div><span class="font-extrabold text-rrpink">${fmt(batterPRI(p))}</span></div>`).join('') || '<p class="text-gray-400">No batter data available.</p>';
+      const selection = recommendationBowlers();
+      document.getElementById('recomBowlersList').innerHTML = selection.players.map((p, i) => {
+        const isBumrah = /jasprit\s+bumrah/i.test(bowlerName(p));
+        return `<div class="p-3 bg-gray-900/70 rounded-lg flex items-center justify-between gap-3 ${isBumrah ? 'border border-cyan-700' : ''}"><div><span class="text-xs font-black text-rraccent mr-2">#${i + 1}</span><span class="font-bold text-white">${esc(bowlerName(p))}</span>${isBumrah ? '<span class="ml-2 text-[10px] uppercase tracking-wide rounded bg-cyan-950 text-cyan-300 px-2 py-1">Role-adjusted pick</span>' : ''}<span class="text-xs text-gray-400 block mt-1">Pressure economy ${fmt(bowlerEco(p))} · RR-PRI ${fmt(bowlerPRI(p))}</span></div><span class="font-extrabold text-rrpink">${fmt(bowlerPRI(p))}</span></div>`;
+      }).join('') || '<p class="text-gray-400">No bowler data available.</p>';
+      document.getElementById('bowlerShortlistStatus').textContent = selection.replaced ? `Jasprit Bumrah replaces Riyan Parag in this role-adjusted shortlist. Bumrah's displayed metrics are sourced from the ${selection.source}; the statistical Bowler Analytics leaderboard is unchanged.` : 'Role-adjusted shortlist unavailable.';
+    }
+    function renderReportObject(data) {
+      if (data === null || data === undefined) return '<p class="text-gray-400">Report unavailable.</p>';
+      const pretty = JSON.stringify(data, null, 2);
+      return `<details class="mb-3 bg-gray-900/70 rounded-lg p-4" open><summary class="cursor-pointer font-bold text-white">View report data</summary><pre class="mt-3 whitespace-pre-wrap break-words text-xs text-gray-300 overflow-x-auto">${esc(pretty)}</pre></details>`;
+    }
+    function renderML() {
+      const root = document.getElementById('mlReport');
+      if (!mlData) { root.innerHTML = '<p class="text-gray-400">ML report endpoint did not return data.</p>'; }
+      else root.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><h3 class="font-bold text-rrgold mb-2">Model evaluation</h3>${renderReportObject(mlData.evaluation ?? mlData)}</div><div><h3 class="font-bold text-rraccent mb-2">Explainability</h3>${renderReportObject(mlData.explainability ?? 'No separate explainability payload returned.')}</div></div>`;
+      const stabilityRoot = document.getElementById('stabilityReport');
+      stabilityRoot.innerHTML = stabilityData ? renderReportObject(stabilityData) : '<p class="text-gray-400">Stability report endpoint did not return data.</p>';
+    }
+    function downloadCSV(which) {
+      const download = (rows, filename) => {
+        if (!rows.length) { showError(`No ${filename} records are available to export.`); return; }
+        const headers = [...new Set(rows.flatMap(row => Object.keys(row)))];
+        const csv = [headers.join(','), ...rows.map(row => headers.map(key => {
+          const value = row[key] ?? '';
+          return `"${String(value).replace(/"/g, '""')}"`;
+        }).join(','))].join('\r\n');
+        const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+      };
+      if (which === 'batters') download(battersData, 'supeRR_batters_ranked.csv');
+      else if (which === 'bowlers') download(bowlersData, 'supeRR_bowlers_ranked.csv');
+      else { download(battersData, 'supeRR_batters_ranked.csv'); setTimeout(() => download(bowlersData, 'supeRR_bowlers_ranked.csv'), 350); }
+    }
+
+    async function initDashboard() {
+      const results = await Promise.allSettled([
+        apiGet('/api/overview'), apiGet('/api/batters'), apiGet('/api/bowlers'), apiGet('/api/reports/ml'), apiGet('/api/reports/stability')
+      ]);
+      const [overview, batters, bowlers, ml, stability] = results;
+      const errors = [];
+      if (overview.status === 'fulfilled') overviewData = overview.value; else errors.push('Overview API unavailable');
+      if (batters.status === 'fulfilled' && Array.isArray(batters.value)) battersData = batters.value; else errors.push('Batter rankings API unavailable or returned an unexpected format');
+      if (bowlers.status === 'fulfilled' && Array.isArray(bowlers.value)) bowlersData = bowlers.value; else errors.push('Bowler rankings API unavailable or returned an unexpected format');
+      if (ml.status === 'fulfilled') mlData = ml.value; else errors.push('ML report API unavailable');
+      if (stability.status === 'fulfilled') stabilityData = stability.value;
+
+      renderOverview(); renderBatters(); renderBowlers(); renderCharts(); renderProfiles(); renderRecommendations(); renderML();
+      setApiStatus(errors.length === 0 ? true : (battersData.length || bowlersData.length ? true : false), errors.length ? 'Partially connected' : 'API connected');
+      if (errors.length) showError(errors.join(' · ') + '. Other available sections have still been loaded.');
+      document.getElementById('lastUpdated').textContent = `Data loaded: ${new Date().toLocaleString()}`;
+    }
+    window.addEventListener('DOMContentLoaded', initDashboard);
+  </script>
+</body>
+
+</html>

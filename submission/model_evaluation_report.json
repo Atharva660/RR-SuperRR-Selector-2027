@@ -1,0 +1,22 @@
+{
+  "LogisticRegression": {
+    "ROC_AUC": 0.5846,
+    "Brier_Score": 0.14,
+    "Log_Loss": 0.4514
+  },
+  "RandomForest": {
+    "ROC_AUC": 0.577,
+    "Brier_Score": 0.1402,
+    "Log_Loss": 0.452
+  },
+  "GradientBoosting": {
+    "ROC_AUC": 0.5793,
+    "Brier_Score": 0.141,
+    "Log_Loss": 0.4539
+  },
+  "XGBoost": {
+    "ROC_AUC": 0.5777,
+    "Brier_Score": 0.1403,
+    "Log_Loss": 0.4524
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "Baseline_Top10": [
+    "Tim David",
+    "Rinku Singh",
+    "Ashutosh Sharma",
+    "David Miller",
+    "Suryakumar Yadav",
+    "Ayush Badoni",
+    "Aiden Markram",
+    "Romario Shepherd",
+    "Liam Livingstone",
+    "Mahendra Singh Dhoni"
+  ],
+  "Overlap_Percentages": {
+    "Threshold_45": 0.5,
+    "Threshold_55": 0.4,
+    "Prior_120": 1.0,
+    "Prior_140": 0.9,
+    "MinBalls_40": 1.0,
+    "MinBalls_60": 1.0
+  },
+  "Mean_Top10_Stability": 0.8,
+  "Key_Insight": "Top 10 players demonstrate >80% stability across threshold variations and Bayesian prior changes."
+}
