@@ -19,9 +19,16 @@ import logging
 import warnings
 warnings.filterwarnings("ignore")
 
-BASE = r"c:\Atharva\RR-SuperRR-Selector-2027"
+BASE = next(
+    (
+        p for p in Path(__file__).resolve().parents
+        if (p / "outputs" / "rankings").exists()
+        and (p / "dashboard" / "frontend").exists()
+    ),
+    Path(__file__).resolve().parent
+)
 sys.path.insert(0, os.path.join(BASE, "src"))
-
+from src.data_loader import load_all_datasets, build_master_dataset, load_player_names
 import pandas as pd
 import numpy as np
 
